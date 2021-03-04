@@ -250,6 +250,7 @@ function toSendLove() {
     loveYouImg.position(windowWidth / 4, (windowHeight / 5) + 2)
     loveYouImg.mouseReleased(releasedToSendLove)
     buggy.sendLove()
+    
 }
 
 function releasedToSendLove() {
