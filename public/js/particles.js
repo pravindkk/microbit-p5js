@@ -1,7 +1,10 @@
 let Particle = function(position, action) {
   if (buggy.genderIsBoy) {  this.acceleration = createVector(-0.05, -0.05);
+    print('boy')
   } 
   else {  this.acceleration = createVector(0.05, -0.05);
+    print('girl')
+
   }
   this.velocity = createVector(random(-1, 0), random(-1, 1));
   this.position = position.copy();
