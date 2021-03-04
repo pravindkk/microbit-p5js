@@ -11,26 +11,15 @@
 </head>
 
 <body>
-    <div class="join-container">
-        <header class="join-header">
-        </header>
-
-        <main >
-
-            <img class="background-image" src="assets/landing-title.png" width="2880" height="1800">
-            <img class="enter-name-image" src="assets/enter-name.png" alt="enter your name image">
-            
-            <form action="choosePerson.html">
-                <input type="text" name="chatroom" id="room" class="chatroomname">
-            </form>
-            <img class="flip-over-image" src="assets/flip.png" alt="flip over image">
-
-            
-        </main>
-    </div>
+    <!-- <form id="enterroom" action="chat.html">
+        <input type="text" id="username">
+        <input type="text" id="chatroom">
+    </form> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.9.2/qs.min.js" integrity="sha256-TDxXjkAUay70ae/QJBEpGKkpVslXaHHayklIVglFRT4=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.min.js"></script>
-    <script src="js/startPage.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/choosePerson.js"></script>
 </body>
 
 </html>

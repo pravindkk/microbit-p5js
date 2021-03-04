@@ -31,6 +31,7 @@ const UART_TX_CHARACTERISTIC_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
 // Allows a connected client to send a byte array
 const UART_RX_CHARACTERISTIC_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
+let rxCharacteristic;
 
 async function connectBle() {
   try {
@@ -55,13 +56,9 @@ async function connectBle() {
       "characteristicvaluechanged",
       onTxCharacteristicValueChanged
     );
-
-    //txCharacteristic.writeValue(Uint8Array.of(1))
-
     rxCharacteristic = await service.getCharacteristic(
       UART_RX_CHARACTERISTIC_UUID
     );
-
   } catch (error) {
     console.log(error);
   }
@@ -78,6 +75,19 @@ function disconnectBle() {
   }
 }
 
+function writeData(data){
+  if (!rxCharacteristic) {
+    console.log("rxCharacteristic is not defined.")
+    return;
+  }
+  try {
+    let encoder = new TextEncoder();
+    rxCharacteristic.writeValue(encoder.encode(data+"\n"));
+  } catch (error) {
+    console.log(error);
+  }
+
+}
 
 
 function onTxCharacteristicValueChanged(event) {

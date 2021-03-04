@@ -24,9 +24,9 @@ const botName = "ChatCord Bot";
 
 // Run when client connects
 io.on("connection", (socket) => {
-    socket.on("joinRoom", ({ username, room }) => {
-        const user = userJoin(socket.id, username, room);
-
+    socket.on("joinRoom", (chatForm) => {
+        const user = userJoin(socket.id, chatForm.name, chatForm.chatroom);
+        console.log(chatForm.name + " has joined room: " + chatForm.chatroom + " with id: "+ socket.id)
         socket.join(user.room);
 
         // Welcome current user
@@ -55,6 +55,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("sentwhat", (msg) => {
+
         const user = getCurrentUser(socket.id);
         console.log(msg);
         socket.broadcast.to(user.room).emit("receivedWhat", msg);
@@ -63,8 +64,10 @@ io.on("connection", (socket) => {
     });
 
     socket.on("sentLove", (msg) => {
+        console.log(socket.id)
         const user = getCurrentUser(socket.id);
         console.log(msg);
+        // console.log(user.room)
         socket.broadcast.to(user.room).emit("receivedLove", msg);
 
         // io.to(user.room).emit('receivedWhat', msg);

@@ -1,17 +1,34 @@
+// const { localeData } = require("moment");
+// const chatForm = document.getElementById("chat-form");
+// const chatMessages = document.querySelector(".chat-messages");
+// const roomName = document.getElementById("room-name");
+// const userList = document.getElementById("users");
+// const leaveButton = document.getElementById("leave-btn");
+// const moment = require('moment')
 
 var value = "nil";
 var startCount = false
 var count = 0
 
 // Get username and room from URL
-const { username, room } = Qs.parse(location.search, {
+const receivedChat = Qs.parse(location.search, {
     ignoreQueryPrefix: true,
 });
 
+// var room = document.location.search.replace(/^.*?\=/,'')
+// // room = room.replace(/&/, " ")
+// console.log(room)
+
 const socket = io();
 
+var chatForm = {
+    name: receivedChat.username,
+    chatroom: receivedChat.chatroom
+}
+
+
 // Join chatroom
-socket.emit("joinRoom", { username, room });
+socket.emit("joinRoom", chatForm);
 
 // Get room and users
 socket.on("roomUsers", ({ room, users }) => {
@@ -19,12 +36,65 @@ socket.on("roomUsers", ({ room, users }) => {
     outputUsers(users);
 });
 
+// Message from server
+// socket.on('message', (message) => {
+//   console.log(message);
+//   outputMessage(message);
 
+//   // Scroll down
+//   chatMessages.scrollTop = chatMessages.scrollHeight;
+// });
+
+// Message submit
+// chatForm.addEventListener('submit', (e) => {
+//   e.preventDefault();
+
+//   // Get message text
+//   let msg = e.target.elements.msg.value;
+
+//   msg = msg.trim();
+
+//   if (!msg) {
+//     return false;
+//   }
+
+//   // Emit message to server
+//   socket.emit('chatMessage', msg);
+
+//   // Clear input
+//   e.target.elements.msg.value = '';
+//   e.target.elements.msg.focus();
+// });
+
+// Output message to DOM
+// function outputMessage(message) {
+//   const div = document.createElement('div');
+//   div.classList.add('message');
+//   const p = document.createElement('p');
+//   p.classList.add('meta');
+//   p.innerText = message.username;
+//   p.innerHTML += `<span>${message.time}</span>`;
+//   div.appendChild(p);
+//   const para = document.createElement('p');
+//   para.classList.add('text');
+//   para.innerText = message.text;
+//   div.appendChild(para);
+//   document.querySelector('.chat-messages').appendChild(div);
+// }
+
+// Add room name to DOM
 function outputRoomName(room) {
+    // roomName.innerText = room;
 }
 
 // Add users to DOM
 function outputUsers(users) {
+    // userList.innerHTML = "";
+    // users.forEach((user) => {
+    //     const li = document.createElement("li");
+    //     li.innerText = user.username;
+    //     userList.appendChild(li);
+    // });
 }
 
 //Prompt the user before leave chat room
@@ -109,9 +179,15 @@ var buggy = {
     sendLove: function() {
         // if (this.atHome == true) {
             //send love
+            
+
+
+            console.log("sending love to server");
+
+
             particleSystem.addParticle(true);
-            console.log("sending love");
             socket.emit("sentLove", true);
+
         // }
     },
 
@@ -119,6 +195,20 @@ var buggy = {
         // if (this.atHome == true && msg == true) {
             //display love icon
             if (msg == true) {
+
+                if (timer.isRunning) {
+
+                    print("timer still running!!")
+                   
+                } else {
+                    //timer is less than 0
+                    //reactivate timer and send message
+                    timer.reset()
+                    writeData("love");
+                    console.log("sending love to microbit");
+    
+                }
+
             console.log("Received Love");
             partnerParticleSystem.addParticle(true);
 
@@ -128,10 +218,12 @@ var buggy = {
 
     sendMissYou: function() {
         // if (this.atHome == true) {
-            //send miss you
+
+            console.log("sending miss to server");
+
             particleSystem.addParticle(false);
-            console.log("sending miss you");
             socket.emit("sentMissYou", true);
+
         // }
     },
 
@@ -139,6 +231,21 @@ var buggy = {
         // if (this.atHome == true && msg == true) {
             //display miss you icon
             if (msg == true) {
+
+                if (timer.isRunning) {
+
+                    print("timer still running!!")
+                   
+                } else {
+                    //timer is less than 0
+                    //reactivate timer and send message
+                    timer.reset()
+                    writeData("miss");
+                    console.log("sending miss to microbit");
+    
+    
+                }
+
             partnerParticleSystem.addParticle(false);
             console.log("Received Miss You");
     }
@@ -155,21 +262,30 @@ let loveYouImg, missYouImg
 let bothImg, nobodyImg, boyImg, girlImg
 let particleSystem, partnerParticleSystem
 let connectBtn, disconnectBtn
+let bg, darkTitleImg, lightTitleImg
+
+let lampImg, lightImg
+let refreshImg, disconnectImg
+
+const ASPECT_RATIO = 900/1400
+
+let sinY = 0
 
 
 function preload() {
     console.log(windowWidth)
-    treeImg = loadImage('/assets/treeBg.png');
-    cloud1 = loadImage('/assets/cloud1.png')
-    cloud2 = loadImage('assets/cloud2.png')
-
-    bothImg = loadImage('assets/boygirl.png')
-    nobodyImg = loadImage('assets/none.png')
-    boyImg = loadImage('assets/boyonly.png')
-    girlImg = loadImage('assets/girlonly.png')
 
 
+    bothImg = loadImage('assets/boy-girl.png')
+    nobodyImg = loadImage('assets/none-home.png')
+    boyImg = loadImage('assets/boy-only.png')
+    girlImg = loadImage('assets/girl-only.png')
 
+    darkTitleImg = loadImage('assets/title-black.png')
+    lightTitleImg = loadImage('assets/title-white.png')
+
+    lampImg = loadImage('assets/lamp.png')
+    lightImg = loadImage('assets/light.png')
 
     cloud1PositionX = windowWidth - windowWidth / 5
     cloud2PositionX = windowWidth / 12
@@ -177,8 +293,14 @@ function preload() {
 
 function setup() {
 
-    loveYouImg = createImg('assets/loveYouImage.png', 'loveYouImge').mousePressed(toSendLove)
-    missYouImg = createImg('assets/missYouImage.png', 'missYouImage').mousePressed(toSendMissYou)
+    loveYouImg = createImg('assets/love-you-btn.png', 'loveYouImge').mousePressed(toSendLove)
+    missYouImg = createImg('assets/miss-you-btn.png', 'missYouImage').mousePressed(toSendMissYou)
+   
+    refreshImg = createImg('assets/refresh.png', 'refreshImage').mousePressed(connectBle)
+    disconnectImg = createImg('assets/disconnect.png', 'disconnectImage').mousePressed(disconnectBle)
+   
+   
+   
     particleSystem = new ParticleSystem(createVector(windowWidth / 2, windowHeight-100));
     partnerParticleSystem = new PartnerParticleSystem(createVector(windowWidth / 2, windowHeight-100), createVector(windowWidth / 2, windowHeight-100),);
 
@@ -217,11 +339,6 @@ function toSendMissYou() {
     missYouImg.position(windowWidth / 2 + windowWidth / 20, (windowHeight / 5) + 2)
     missYouImg.mouseReleased(releasedToSendMissYou)
 
-
-
-
-
-
     buggy.sendMissYou()
 }
 
@@ -233,13 +350,12 @@ function draw() {
 
     createCanvas(windowWidth, windowHeight)
     
-    background(255, 244, 229)
-
-    drawTrees()
-    drawClouds()
+    drawBackground()
     drawButtons()
     drawStatus()
     updateParticleSystem()
+
+    timer.run()
 
     particleSystem.run();
     partnerParticleSystem.run();
@@ -251,91 +367,118 @@ function draw() {
 
 }
 
-function drawClouds() { 
-
-    cloudWidth = windowWidth*0.1
-    cloudHeight = cloudWidth*0.4593
+function drawBackground() {
 
 
-    image(cloud1, cloud1PositionX, windowHeight / 2.80, cloudWidth, cloudHeight)
+    //image(bg, 0, 0, windowWidth, windowWidth*0.625)
 
-    cloud1PositionX--
 
-    image(cloud2, cloud2PositionX, windowHeight / 18, cloudWidth, cloudHeight)
 
-    cloud2PositionX--
+    if (!buggy.atHome && !buggy.partnerAtHome) {
 
-    if (cloud1PositionX < -200) {
-        cloud1PositionX = windowWidth
+        background(97)
+        image(lightTitleImg, 0, 0, windowWidth, windowWidth*ASPECT_RATIO)
+    
+
+    } else {
+        background(255)
+        image(darkTitleImg, 0, 0, windowWidth, windowWidth*ASPECT_RATIO)
+
     }
 
-    if (cloud2PositionX < -200) {
-        cloud2PositionX = windowWidth
-    }
-}
 
-function drawTrees() {
 
-    treeWidth = windowWidth
-    treeHeight = treeWidth * 0.625
-
-    treeImgY = windowHeight - treeHeight
-
-    image(treeImg, 0, treeImgY, windowWidth, windowWidth * 0.625);
 
 
 }
 
 function drawButtons() {
-    
-    loveYouImg.size(windowWidth * 0.212, windowWidth * 0.0778)
-        .position(windowWidth / 4, windowHeight / 5)
 
-    missYouImg.size(windowWidth * 0.212, windowWidth * 0.0778)
-    .position(windowWidth / 2 + windowWidth / 20, windowHeight / 5)
+
+    mainButtonSize = windowWidth*.2
+    mainButtonY = windowHeight*.2
+    
+    loveYouImg.position(windowWidth*.2-mainButtonSize/2, mainButtonY).size(mainButtonSize, mainButtonSize)
+    missYouImg.position(windowWidth*.8-mainButtonSize/2, mainButtonY).size(mainButtonSize, mainButtonSize)
+
+    cornerButtonWidth = windowWidth*0.13
+    cornerButtonHeight = cornerButtonWidth/2000*378
+    cornerButtonY = windowWidth*0.05
+
+    refreshImg.position(cornerButtonY, windowHeight*.85).size(cornerButtonWidth, cornerButtonHeight)
+    disconnectImg.position(cornerButtonY,windowHeight*.9).size(cornerButtonWidth, cornerButtonHeight)
+
+    //    missYouImg.size(imageSize, imageSize)
+    //.position(windowWidth*.69, windowHeight*0.16)
 }
 
 function drawStatus() { 
 
-
-    statusWidth = windowWidth*.3
-    statusHeight = statusWidth * 0.8907
-
-    statusX = windowWidth/2 - statusWidth/2
-    statusY = (windowHeight - statusHeight) + (5 * sin(frameCount / 20));
+    sinY = sinY + 0.5 * sin(frameCount / 20);
 
 
-    if (buggy.atHome == true && buggy.partnerAtHome == true) { 
+    lightOpacity = 0
+    selectedImg = nobodyImg
 
-        image(bothImg, statusX, statusY, statusWidth, statusHeight);
+    if (buggy.atHome && buggy.partnerAtHome) { 
 
-    } else if (buggy.atHome == false && buggy.partnerAtHome == false) {
+        lightOpacity = 255
+        selectedImg = bothImg
 
-        image(nobodyImg, statusX, statusY, statusWidth, statusHeight);
+    } else if (buggy.atHome && buggy.partnerAtHome) {
 
-    } else if (buggy.atHome == true) {
+        lightOpacity = 0
+        selectedImg = nobodyImg
 
-        if (buggy.genderIsBoy == true) {
 
-            image(boyImg, statusX, statusY, statusWidth, statusHeight);
+    } else if (buggy.atHome) {
+
+        lightOpacity = 100
+
+        if (buggy.genderIsBoy) {
+
+            selectedImg = boyImg
 
         } else {
 
-            image(girlImg, statusX, statusY, statusWidth, statusHeight);
+            selectedImg = girlImg
+
         }
 
-    } else if (buggy.partnerAtHome == true) {
+    } else if (buggy.partnerAtHome) {
 
-        if (buggy.genderIsBoy == true) {
+        lightOpacity = 100
 
-            image(girlImg, statusX, statusY, statusWidth, statusHeight);
+        if (buggy.genderIsBoy) {
+
+            selectedImg = girlImg
+
 
         } else {
 
-            image(boyImg, statusX, statusY, statusWidth, statusHeight);
+            selectedImg = boyImg
         }
 
     }
+
+    image(selectedImg, 0, sinY, windowWidth, windowWidth*ASPECT_RATIO);
+
+
+    push()
+    //draw light with opacity 0-255
+    tint(255, lightOpacity)
+    image(lightImg, 0, sinY, windowWidth, windowWidth*ASPECT_RATIO)
+    pop()
+
+    image(lampImg, 0, sinY, windowWidth, windowWidth*ASPECT_RATIO)
+
+
+
+
+
+
+
+    //draw lamp
 
 }
 
@@ -344,11 +487,11 @@ function updateParticleSystem() {
     if (buggy.genderIsBoy == true) {
         particleSystem.origin = createVector(windowWidth*.4, windowHeight*.8)
         partnerParticleSystem.origin = createVector(0, 0)
-        partnerParticleSystem.target = createVector(windowWidth*.4, windowHeight*.8)
+        partnerParticleSystem.target = createVector(windowWidth*.4, windowHeight)
     } else {
         particleSystem.origin = createVector(windowWidth*.6, windowHeight*.8)
         partnerParticleSystem.origin = createVector(windowWidth, 0)
-        partnerParticleSystem.target = createVector(windowWidth*.6, windowHeight*.8)
+        partnerParticleSystem.target = createVector(windowWidth*.6, windowHeight)
     }
 
 }
@@ -378,4 +521,26 @@ function handleData(status){
 
     }
     
+  }
+
+  let timer = {
+      value: 300,
+      isRunning: true,
+
+      run: function() {
+          this.value -= 1
+
+          if (this.value < 0) {
+            this.isRunning = false
+          } else {
+            this.isRunning = true
+          }
+
+      },
+
+      reset: function() {
+          this.value = 300
+      }
+
+      
   }

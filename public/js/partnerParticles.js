@@ -34,7 +34,7 @@ PartnerParticle.prototype.update = function(){
 
 
 
-  this.lifespan -= 1.7;
+  this.lifespan -= ((windowWidth*0.4)/300);
   //if (this.lifespan > 255) {this.lifespan = 255}
 
 

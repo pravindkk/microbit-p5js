@@ -1,7 +1,7 @@
-img {
+/* img {
     width: 100%;
     height: auto;
-  }
+  } */
 
 @font-face {
     font-family: "Pamela";
@@ -10,8 +10,9 @@ img {
 
 input {
     font-family: "Pamela";
-    font-size: 150%;
-    width: 100%
+    font-size: 170%;
+    color: #ffffff;
+    /* width: 100% */
     
 }
 
@@ -30,52 +31,64 @@ option {
     text-align: center;
 }
 
+.background-image {
+    width: 60%;
+    height: auto;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    top: 30px;
+}
+
 .child {
 /* ... */
     position: absolute;
     top: 0;
     left: 0;
-    }
+}
 
+.enter-name-image {
+    width: 20%;
+    padding-top: 8%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 .chatroomname {
     border-radius: 25px;
-    border: 2px solid #cccccc;
+    border: 2px solid #ffffff;
+    background-color: #ff3431;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    width: 70%;
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+    /* padding-top: 10%; */
+    position: relative;
+    top: 5px;
+    padding: 1%;
+
+}
+
+.flip-over-image {
+    width: 50%;
+    padding-top: 10%;
+    display: block;
     margin-left: auto;
     margin-right: auto;
-    justify-content: center;
-    /* align-items: center; */
-    text-align: center;
-    /* background: url(paper.gif);
-    background-position: center top;
-    background-repeat: repeat;
-    padding: 20px;  */
-    width: 82vw;
-    height: 4vh;  
-    position: absolute;
-    left: 10vh;
-    top: 28vh;
-    /* top: 50% */
+    position: relative;
+}
 
+  /* .parent {
+    position: relative;
   }
 
-  .inputusername {
-    border-radius: 25px;
-    border: 2px solid #cccccc;
-    margin-left: auto;
-    margin-right: auto;
-    justify-content: center;
-    /* align-items: center; */
-    text-align: center;
-    /* background: url(paper.gif);
-    background-position: center top;
-    background-repeat: repeat;
-    padding: 20px;  */
-    width: 83vw;
-    height: 5vh;
+  .child {
     position: absolute;
-    left: 10vh;
-    top: 20vh;
-    /* top: 50% */
-
-  }
+    top: 0;
+    left: 0;
+  } */
