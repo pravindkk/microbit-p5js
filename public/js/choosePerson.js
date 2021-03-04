@@ -1,5 +1,6 @@
 var personChosen
 
+
 const room = Qs.parse(location.search, {
     ignoreQueryPrefix: true
 });
@@ -9,7 +10,6 @@ console.log(room.chatroom)
 const socket = io()
 
 function preload() {
-    
 }
 
 function setup() {
@@ -37,6 +37,7 @@ function drawromeoandjuliet() {
     
     romeoImg.position(romeoButtonX, mainButtonY).size(mainButtonSize, mainButtonSize*1.80)
     julietImg.position(julietButtonX, mainButtonY).size(mainButtonSize, mainButtonSize*1.80)
+
 }
 
 function drawSelectRole() {
@@ -55,6 +56,7 @@ function romeoPressed(){
         julietImg.remove()
         julietImg = createImg('assets/juliet-unactivated.png', 'juliet image')
             .position(julietButtonX, mainButtonY).size(mainButtonSize, mainButtonSize*1.80).mousePressed(julietPressed)
+        
     }
     romeoImg.remove()
     romeoImg = createImg('assets/romeo-activated.png', 'romeo image')
