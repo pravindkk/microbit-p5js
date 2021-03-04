@@ -40,10 +40,10 @@ socket.on("receivedMissYou", (msg) => {
 
 var buggy = {
 
-    atHome: true,
+    atHome: false ,
     partnerAtHome: false,
     isHappy: true,
-    genderIfBoy: true,
+    genderIsBoy: true,
 
     checkBuggyStatus: function() {
         if (pulse > 10) {
@@ -95,11 +95,15 @@ var buggy = {
 
     sendLove: function() {
 
-        console.log("sending love to server");
+        if (this.atHome == true) {
+
+            console.log("sending love to server");
+
+            particleSystem.addParticle(true);
+            socket.emit("sentLove", true);
+        }
 
 
-        particleSystem.addParticle(true);
-        socket.emit("sentLove", true);
 
     },
 
@@ -115,9 +119,12 @@ var buggy = {
                 } else {
                     //timer is less than 0
                     //reactivate timer and send message
+
                     timer.reset()
                     writeData("love");
                     console.log("sending love to microbit");
+
+                    happySong.play()
     
                 }
 
@@ -129,14 +136,14 @@ var buggy = {
     },
 
     sendMissYou: function() {
-        // if (this.atHome == true) {
+        if (this.atHome == true) {
 
             console.log("sending miss to server");
 
             particleSystem.addParticle(false);
             socket.emit("sentMissYou", true);
 
-        // }
+        }
     },
 
     displayMissYou: function(msg) {
@@ -154,6 +161,9 @@ var buggy = {
                     timer.reset()
                     writeData("miss");
                     console.log("sending miss to microbit");
+
+                    sadSong.play()
+
     
     
                 }
@@ -176,6 +186,7 @@ let bothImg, nobodyImg, boyImg, girlImg
 let particleSystem, partnerParticleSystem
 let connectBtn, disconnectBtn
 let bg, darkTitleImg, lightTitleImg
+let happySong, sadSong
 
 let lampImg, lightImg
 let refreshImg, disconnectImg
@@ -200,16 +211,24 @@ function preload() {
     lampImg = loadImage('assets/lamp.png')
     lightImg = loadImage('assets/light.png')
 
+    happySong = loadSound('assets/happy.mp3');
+    sadSong = loadSound('assets/sad.mp3');
+
+
     cloud1PositionX = windowWidth - windowWidth / 5
     cloud2PositionX = windowWidth / 12
 }
 
 function setup() {
 
-    loveYouImg = createImg('assets/love-you-btn.png', 'loveYouImge').mousePressed(toSendLove)
-    missYouImg = createImg('assets/miss-you-btn.png', 'missYouImage').mousePressed(toSendMissYou)
+    loveYouImg = createImg('assets/love-you-btn.png', 'loveYouImge').mousePressed(function() {
+        buggy.sendLove()
+    })
+    missYouImg = createImg('assets/miss-you-btn.png', 'missYouImage').mousePressed(function() {
+        buggy.sendMissYou()
+    })
    
-    refreshImg = createImg('assets/refresh.png', 'refreshImage').mousePressed(connectBle)
+    refreshImg = createImg('assets/connect.png', 'refreshImage').mousePressed(connectBle)
     disconnectImg = createImg('assets/disconnect.png', 'disconnectImage').mousePressed(disconnectBle)
    
    
@@ -225,48 +244,38 @@ function setup() {
 
     imABoy = createButton("im a boy");
     imABoy.mousePressed(function(){
-        buggy.genderIfBoy = true
+        buggy.genderIsBoy = true
     });
 
     imAGirl = createButton("im a girl");
     imAGirl.mousePressed(function(){
-        buggy.genderIfBoy = false
+        buggy.genderIsBoy = false
     });
+
+
+    createButton("im home").mousePressed(function(){
+        buggy.atHome = true
+        buggy.sendBuggyStatus()
+
+    })
+
+    createButton("left home").mousePressed(function(){
+        buggy.atHome = false
+        buggy.sendBuggyStatus()
+
+    })
     
     if (chatForm.name == "romeo") {
-        buggy.genderIfBoy = true
+        buggy.genderIsBoy = true
     } else {
-        buggy.genderIfBoy = false
+        buggy.genderIsBoy = false
     }
 
-    
-
-
 
 
 }
 
-function toSendLove() {
-    loveYouImg.position(windowWidth / 4, (windowHeight / 5) + 2)
-    loveYouImg.mouseReleased(releasedToSendLove)
-    buggy.sendLove()
-    
-}
 
-function releasedToSendLove() {
-    loveYouImg.position(windowWidth / 4, windowHeight / 5)
-}
-
-function toSendMissYou() {
-    missYouImg.position(windowWidth / 2 + windowWidth / 20, (windowHeight / 5) + 2)
-    missYouImg.mouseReleased(releasedToSendMissYou)
-
-    buggy.sendMissYou()
-}
-
-function releasedToSendMissYou() {
-    missYouImg.position(windowWidth / 2 + windowWidth / 20, windowHeight / 5)
-}
 
 function draw() {
 
@@ -324,7 +333,7 @@ function drawButtons() {
     missYouImg.position(windowWidth*.8-mainButtonSize/2, mainButtonY).size(mainButtonSize, mainButtonSize)
 
     cornerButtonWidth = windowWidth*0.13
-    cornerButtonHeight = cornerButtonWidth/2000*378
+    cornerButtonHeight = cornerButtonWidth/322*52
     cornerButtonY = windowWidth*0.05
 
     refreshImg.position(cornerButtonY, windowHeight*.85).size(cornerButtonWidth, cornerButtonHeight)
@@ -357,7 +366,7 @@ function drawStatus() {
 
         lightOpacity = 100
 
-        if (buggy.genderIfBoy) {
+        if (buggy.genderIsBoy) {
 
             selectedImg = boyImg
 
@@ -371,7 +380,7 @@ function drawStatus() {
 
         lightOpacity = 100
 
-        if (buggy.genderIfBoy) {
+        if (buggy.genderIsBoy) {
 
             selectedImg = girlImg
 
@@ -406,7 +415,7 @@ function drawStatus() {
 
 function updateParticleSystem() {
 
-    if (buggy.genderIfBoy == true) {
+    if (buggy.genderIsBoy == true) {
         particleSystem.origin = createVector(windowWidth*.4, windowHeight*.8)
         partnerParticleSystem.origin = createVector(0, 0)
         partnerParticleSystem.target = createVector(windowWidth*.4, windowHeight)
