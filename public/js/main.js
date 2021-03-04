@@ -261,14 +261,6 @@ var buggy = {
         // }
     },
 
-    // checkifGenderIfBoy: function(chatForm) {
-    //     if (chatForm.name == "romeo") {
-    //         this.genderIfBoy = true
-    //     } else {
-    //         this.genderIfBoy = false
-    //     }
-    // },
-
 
 };
 
