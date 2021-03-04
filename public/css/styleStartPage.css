@@ -11,7 +11,7 @@
 input {
     font-family: "Pamela";
     font-size: 170%;
-    color: #ffffff;
+    /* color: #ffffff; */
     /* width: 100% */
     
 }
@@ -32,7 +32,7 @@ option {
 }
 
 .background-image {
-    width: 60%;
+    width: 50%;
     height: auto;
     display: block;
     margin-left: auto;
@@ -42,7 +42,6 @@ option {
 }
 
 .child {
-/* ... */
     position: absolute;
     top: 0;
     left: 0;
@@ -57,22 +56,32 @@ option {
 }
 
 .chatroomname {
-    border-radius: 25px;
+    border-radius: 50px;
     border: 2px solid #ffffff;
-    background-color: #ff3431;
+    background-color: #e6e6e6;
+    color: #000000;
     justify-content: center;
     text-align: center;
     align-items: center;
-    width: 70%;
+    width: 60%;
     display: block;
     margin-right: auto;
     margin-left: auto;
     /* padding-top: 10%; */
     position: relative;
     top: 5px;
-    padding: 1%;
+    padding: 1.75%;
+    transition: .25s ease;
+    /* -webkit-transition: color .25s ease-in-out;
+    transition: color .25s ease-in-out; */
+    /* background-image: url('assets/name-fill-activated.png') */
 
 }
+
+.chatroomname:valid {
+    background-color: #ff3431;
+    color: #ffffff;
+  }
 
 .flip-over-image {
     width: 50%;

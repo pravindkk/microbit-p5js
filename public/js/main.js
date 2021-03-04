@@ -27,6 +27,8 @@ var chatForm = {
 }
 
 
+// buggy.checkifGenderIfBoy(chatForm)
+
 // Join chatroom
 socket.emit("joinRoom", chatForm);
 
@@ -119,6 +121,13 @@ socket.on("receivedMissYou", (msg) => {
 
 console.log(new Date().toISOString().replace(/T/, " ").replace(/\..+/, ""));
 
+// console.log(chatForm)
+// if (chatForm.name == "romeo") {
+//     buggy.genderIfBoy = true
+// } else {
+//     buggy.genderIfBoy = false
+// }
+
 
 
 var buggy = {
@@ -126,7 +135,7 @@ var buggy = {
     atHome: true,
     partnerAtHome: false,
     isHappy: true,
-    genderIsBoy:true,
+    genderIfBoy: true,
 
     checkBuggyStatus: function() {
         if (pulse > 10) {
@@ -252,6 +261,15 @@ var buggy = {
         // }
     },
 
+    // checkifGenderIfBoy: function(chatForm) {
+    //     if (chatForm.name == "romeo") {
+    //         this.genderIfBoy = true
+    //     } else {
+    //         this.genderIfBoy = false
+    //     }
+    // },
+
+
 };
 
 
@@ -312,13 +330,21 @@ function setup() {
 
     imABoy = createButton("im a boy");
     imABoy.mousePressed(function(){
-        buggy.genderIsBoy = true
+        buggy.genderIfBoy = true
     });
 
     imAGirl = createButton("im a girl");
     imAGirl.mousePressed(function(){
-        buggy.genderIsBoy = false
+        buggy.genderIfBoy = false
     });
+    
+    if (chatForm.name == "romeo") {
+        buggy.genderIfBoy = true
+    } else {
+        buggy.genderIfBoy = false
+    }
+
+    
 
 
 
@@ -435,7 +461,7 @@ function drawStatus() {
 
         lightOpacity = 100
 
-        if (buggy.genderIsBoy) {
+        if (buggy.genderIfBoy) {
 
             selectedImg = boyImg
 
@@ -449,7 +475,7 @@ function drawStatus() {
 
         lightOpacity = 100
 
-        if (buggy.genderIsBoy) {
+        if (buggy.genderIfBoy) {
 
             selectedImg = girlImg
 
@@ -484,7 +510,7 @@ function drawStatus() {
 
 function updateParticleSystem() {
 
-    if (buggy.genderIsBoy == true) {
+    if (buggy.genderIfBoy == true) {
         particleSystem.origin = createVector(windowWidth*.4, windowHeight*.8)
         partnerParticleSystem.origin = createVector(0, 0)
         partnerParticleSystem.target = createVector(windowWidth*.4, windowHeight)
