@@ -78,12 +78,8 @@ function julietPressed() {
 
 function submitPressed(){
     
-    // document.getElementById('username') = personChosen
-    // document.getElementById('chatroom') = room.chatroom
     localStorage.setItem("submitName", personChosen)
     localStorage.setItem("submitRoom", room.chatroom)
     window.document.location = 'chat.html' + '?username=' + personChosen + '&chatroom=' + room.chatroom
-    // socket.emit("joinRoom", chatForm)
-    // document.getElementById("enterroom").submit()
 
 }
