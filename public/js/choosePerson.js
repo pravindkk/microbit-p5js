@@ -1,5 +1,6 @@
 var personChosen
 
+
 const room = Qs.parse(location.search, {
     ignoreQueryPrefix: true
 });
@@ -9,7 +10,6 @@ console.log(room.chatroom)
 const socket = io()
 
 function preload() {
-    
 }
 
 function setup() {
@@ -30,13 +30,14 @@ function draw() {
 
 function drawromeoandjuliet() {
     mainButtonSize = windowWidth*.2
-    mainButtonY = windowHeight*.2
+    mainButtonY = windowHeight*.1
 
     romeoButtonX = windowWidth*.4-mainButtonSize/2,
     julietButtonX = windowWidth*.62-mainButtonSize/2,
     
     romeoImg.position(romeoButtonX, mainButtonY).size(mainButtonSize, mainButtonSize*1.80)
     julietImg.position(julietButtonX, mainButtonY).size(mainButtonSize, mainButtonSize*1.80)
+
 }
 
 function drawSelectRole() {
@@ -52,9 +53,12 @@ function drawSubmitButton() {
 
 function romeoPressed(){
     if (personChosen == "juliet") {
+        julietImg.remove()
         julietImg = createImg('assets/juliet-unactivated.png', 'juliet image')
             .position(julietButtonX, mainButtonY).size(mainButtonSize, mainButtonSize*1.80).mousePressed(julietPressed)
+        
     }
+    romeoImg.remove()
     romeoImg = createImg('assets/romeo-activated.png', 'romeo image')
         .position(romeoButtonX, mainButtonY).size(mainButtonSize, mainButtonSize*1.80)
     personChosen = "romeo"
@@ -65,9 +69,11 @@ function romeoPressed(){
 
 function julietPressed() {
     if (personChosen == "romeo") {
+        romeoImg.remove()
         romeoImg = createImg('assets/romeo-unactivated.png', 'romeo image')
         .position(romeoButtonX, mainButtonY).size(mainButtonSize, mainButtonSize*1.80).mousePressed(romeoPressed)
     }
+    julietImg.remove()
     julietImg = createImg('assets/juliet-activated.png', 'juliet image')
             .position(julietButtonX, mainButtonY).size(mainButtonSize, mainButtonSize*1.80)
     personChosen = "juliet"
